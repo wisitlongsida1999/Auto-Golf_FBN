@@ -84,20 +84,22 @@ def read_excel_data():
 
 def fill_in_form(cisco_id):
 
+    frame = WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//frame[@name="down"]')))
 
+    driver.switch_to_frame(frame)
 
     WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(dict_excel_data[cisco_id][1])
 
 
-    if 'final' in dict_excel_data[cisco_id][0].lower() and 'replacement' in dict_excel_data[cisco_id][1].lower:
+    if 'final' in dict_excel_data[cisco_id][0].lower() and 'replacement' in dict_excel_data[cisco_id][1].lower():
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="129"]'))).click()
     
-    elif 'final' in dict_excel_data[cisco_id][0].lower() and 'scrap' in dict_excel_data[cisco_id][1].lower:
+    elif 'final' in dict_excel_data[cisco_id][0].lower() and 'scrap' in dict_excel_data[cisco_id][1].lower():
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="114"]'))).click()
 
-    elif 'recall' in dict_excel_data[cisco_id][1].lower:
+    elif 'recall' in dict_excel_data[cisco_id][1].lower():
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="130"]'))).click()
 
@@ -113,6 +115,16 @@ def fill_in_form(cisco_id):
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="button"][@name="hello"][@value="Send  Your  Action"]'))).click()
     
 
+    # handle with alert
+    try:
+        WebDriverWait(driver, 3).until(ec.alert_is_present())
+
+        alert = driver.switch_to.alert
+        alert.accept()
+        print("alert accepted")
+
+    except:
+        print("no alert")
 
 #Access to the golf id
 
@@ -161,7 +173,7 @@ def main():
         for cisco_id in dict_excel_data:
             access_to_golf_id(cisco_id)
             sleep(1)
-            fill_in_form()
+            
         
         print(  """
                 ─────────███──────────███
@@ -204,7 +216,7 @@ def main():
         
         if dict_state_incorrect.__len__() != 0:
             print('='*100)
-            print('Show closure incorrect')
+            print('Show state incorrect')
             print('-'*100)
             print(dict_state_incorrect)
 
@@ -213,9 +225,9 @@ def main():
             pass
 
         print("Exit the program")
-        sleep(3)
-
+        sleep(2)
+        driver.quit()
         
 
 
-
+main()

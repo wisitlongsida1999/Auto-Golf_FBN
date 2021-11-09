@@ -84,20 +84,21 @@ def read_excel_data():
 
 def fill_in_form(cisco_id):
 
+    frame = (WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//frame[@name="down"]'))))
 
+    driver.switch_to_frame(frame)
 
     WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(dict_excel_data[cisco_id][1])
 
-
-    if 'final' in dict_excel_data[cisco_id][0].lower() and 'replacement' in dict_excel_data[cisco_id][1].lower:
+    if 'final' in dict_excel_data[cisco_id][0].lower() and 'replacement' in dict_excel_data[cisco_id][1].lower():
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="129"]'))).click()
     
-    elif 'final' in dict_excel_data[cisco_id][0].lower() and 'scrap' in dict_excel_data[cisco_id][1].lower:
+    elif 'final' in dict_excel_data[cisco_id][0].lower() and 'scrap' in dict_excel_data[cisco_id][1].lower():
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="114"]'))).click()
 
-    elif 'recall' in dict_excel_data[cisco_id][1].lower:
+    elif 'recall' in dict_excel_data[cisco_id][1].lower():
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="130"]'))).click()
 
@@ -162,7 +163,7 @@ def main():
         for cisco_id in dict_excel_data:
             access_to_golf_id(cisco_id)
             sleep(1)
-            fill_in_form()
+            
         
         print(  """
                 ─────────███──────────███

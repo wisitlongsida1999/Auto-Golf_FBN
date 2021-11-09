@@ -57,7 +57,19 @@ while(url_before==driver.current_url):
         raise Exception("Fail Connected to server")
 
 
-driver.get("view-source:https://golf.fabrinet.co.th/normaluser/WorkFlow.asp?rnt=3383386-CISCO&mode=1&documentgroup=&documentprefix=All%20Documents&docstatus=&orderby=&CurPage=1&uid=15!52!38!575&searchid=3383386-CISCO")
+driver.get("https://golf.fabrinet.co.th/normaluser/WorkFlow.asp?rnt=3383386-CISCO&mode=1&documentgroup=&documentprefix=All%20Documents&docstatus=&orderby=&CurPage=1&uid=8!24!10!301&searchid=3383386-CISCO")
 print('='*100)
-driver.page_source()
-WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="button"][@name="viewi21354816s17c2924t6"]'))).click()
+# print(driver.page_source)
+
+try:
+    frame = (WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//frame[@name="down"]'))))
+    driver.switch_to_frame(frame)
+
+    print(driver.page_source)
+
+    
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys("Test")
+except:
+    print("Not found!")
+    
+
