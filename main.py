@@ -26,6 +26,7 @@ def initialize():
     global url
     global dict_state_incorrect
     global dict_closure_incorrect
+    global not_found_case
 
 
     username = payload['username']
@@ -37,7 +38,7 @@ def initialize():
     time_out = 30 #default
     dict_state_incorrect = {}
     dict_closure_incorrect = {}
-
+    not_found_case = []
 
     #Set Up
     global driver
@@ -134,29 +135,34 @@ def access_to_golf_id(cisco_id):
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@name="searchid"]'))).send_keys(cisco_id)
     WebDriverWait(driver, 10).until(ec.visibility_of_all_elements_located((By.XPATH, '//input[@name="searchbutton"]')))[0].click()
     print('='*200)
-    all_span = WebDriverWait(driver, 10).until(ec.visibility_of_all_elements_located((By.XPATH, '//span[@style="cursor:hand"]')))
+    try:
+        all_span = WebDriverWait(driver, 10).until(ec.visibility_of_all_elements_located((By.XPATH, '//span[@style="cursor:hand"]')))
 
 
-    print('='*200)
-    all_span_text = []
-    for i in all_span:
-        print(i.text)
-        all_span_text.append(i.text)
+        print('='*200)
+        all_span_text = []
+        for i in all_span:
+            print(i.text)
+            all_span_text.append(i.text)
 
-    dict_all_span[all_span_text[3]] = all_span_text
-    print('='*200)
-
-    print("Number of spans are",len(all_span),"Expected to \"12\" ")
-    all_span[9].text
-    if all_span_text[3] == cisco_id and 'FA: Review' in all_span_text[10]:
+        dict_all_span[all_span_text[3]] = all_span_text
         print('='*200)
 
-        print(all_span_text[3],"is \"Review State\" ")
-        all_span[3].click()
-        fill_in_form(cisco_id)
-    else:
-        print(all_span_text[3],"is not \"Review State\" ")
-        dict_state_incorrect[cisco_id] = dict_excel_data[cisco_id]
+        print("Number of spans are",len(all_span),"Expected to \"12\" ")
+        all_span[9].text
+        if all_span_text[3] == cisco_id and 'FA: Review' in all_span_text[10]:
+            print('='*200)
+
+            print(all_span_text[3],"is \"Review State\" ")
+            all_span[3].click()
+            fill_in_form(cisco_id)
+        else:
+            print(all_span_text[3],"is not \"Review State\" ")
+            dict_state_incorrect[cisco_id] = dict_excel_data[cisco_id]
+    
+    except:
+        not_found_case.append(cisco_id)
+
 
 
 
@@ -219,6 +225,12 @@ def main():
             print('Show state incorrect')
             print('-'*100)
             print(dict_state_incorrect)
+
+        if not_found_case.__len__() != 0 :
+            print('='*100)
+            print('Show Not found Case')
+            print('-'*100)
+            print(not_found_case)
 
         while(input("Press \'e\' to exit !\n").lower() != 'e'):
 
