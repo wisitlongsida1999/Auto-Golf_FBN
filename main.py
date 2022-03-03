@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from time import sleep
 import pandas as pd
+import sys
 
 
 
@@ -81,8 +82,6 @@ def read_excel_data():
     print("="*100)
 
 
-
-
 def fill_in_form(cisco_id):
 
     frame = WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//frame[@name="down"]')))
@@ -92,7 +91,7 @@ def fill_in_form(cisco_id):
     WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(dict_excel_data[cisco_id][1])
 
 
-    if 'final' in dict_excel_data[cisco_id][0].lower() and 'replacement' in dict_excel_data[cisco_id][1].lower():
+    if ('final' in dict_excel_data[cisco_id][0].lower() and 'replacement' in dict_excel_data[cisco_id][1].lower() ) or ('final' in dict_excel_data[cisco_id][0].lower() and 'credit' in dict_excel_data[cisco_id][1].lower()):
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="129"]'))).click()
     
@@ -100,11 +99,11 @@ def fill_in_form(cisco_id):
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="114"]'))).click()
 
-    elif 'recall' in dict_excel_data[cisco_id][1].lower():
+    elif 'recall' in dict_excel_data[cisco_id][1].lower() or 're-call' in dict_excel_data[cisco_id][1].lower():
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="130"]'))).click()
 
-    elif 'reject' in dict_excel_data[cisco_id][0].lower() or 'prelim' in dict_excel_data[cisco_id][0].lower():
+    elif ('reject' in dict_excel_data[cisco_id][0].lower() or 'prelim' in dict_excel_data[cisco_id][0].lower() or 'final' in dict_excel_data[cisco_id][0].lower()) and ('replacement' not in dict_excel_data[cisco_id][1].lower() and 'scrap' not in dict_excel_data[cisco_id][1].lower() and 'recall' not in dict_excel_data[cisco_id][1].lower() and 're-call' not in dict_excel_data[cisco_id][1].lower()  ):
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="23"]'))).click()
 
@@ -114,7 +113,6 @@ def fill_in_form(cisco_id):
 
 
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="button"][@name="hello"][@value="Send  Your  Action"]'))).click()
-    
 
     # handle with alert
     try:
