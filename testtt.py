@@ -1,5 +1,4 @@
-t = 'rrrttt'
+i  = 'arissara_golf'
 
 
-if "rr" and "t2t" and "343" not in t:
-    print(t)
+print(type(i.split('_')[0]))

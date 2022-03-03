@@ -11,49 +11,57 @@ import sys
 
 
 def initialize():
-    # config
-    my_config_parser = configparser.ConfigParser()
-    my_config_parser.read('config.ini')
-    payload = {
-        'username': my_config_parser.get('GOLF_LOGIN','username'),
-        'password': my_config_parser.get('GOLF_LOGIN','password'),
-        'url':my_config_parser.get('GOLF_LOGIN','url'),
-        'path':my_config_parser.get('GOLF_LOGIN','path')
 
-        }
     global dict_all_span
     global dict_excel_data
-    global path
-    global url
     global dict_state_incorrect
     global dict_closure_incorrect
     global not_found_case
+    global owner_golf
+    global time_out
 
-
-    username = payload['username']
-    password = payload['password']
-    url = payload['url']
-    path = payload['path']
     dict_all_span = {} #global
     dict_excel_data = {} #global
     time_out = 30 #default
     dict_state_incorrect = {}
     dict_closure_incorrect = {}
     not_found_case = []
+    owner_golf = {'nathawit_golf':{},'arissara_golf':{},'wisit_golf':{},'yanee_golf':{}}
 
-    #Set Up
+
+
+
+def login(user,pwd):
+
+    # config
+    my_config_parser = configparser.ConfigParser()
+    my_config_parser.read('config.ini')
+    payload = {
+        'username': my_config_parser.get('GOLF_LOGIN',f'{user}'),
+        'password': my_config_parser.get('GOLF_LOGIN',f'{pwd}'),
+
+        }
+
+
+    username = payload['username']
+    password = payload['password']
+
+
+
+
+
+
+
     global driver
     driver=webdriver.Chrome()
     driver.minimize_window()
-    driver.get(url)
+    driver.get('https://golf.fabrinet.co.th/normaluser/MyWorkFlow.asp?mode=1&documentgroup=&documentprefix=&docstatus=1')
     url_before = driver.current_url
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="text"]'))).send_keys(username)
 
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="password"]'))).send_keys(password)
 
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="submit"]'))).click()
-
-    read_excel_data()
 
     time = 0
     while(url_before==driver.current_url):
@@ -64,53 +72,66 @@ def initialize():
             raise Exception("Fail Connected to server")
 
 
+
+
 def read_excel_data():
-    df = pd.read_excel(path)
+    df = pd.read_excel('GOLF_8D_Template.xlsx')
     print(df)
     index = df.index
     number_of_rows = len(index)
     print(number_of_rows)
 
-    print(df['FA Report Acceptance'][0])
-    print(df['Cisco Comment to supplier'][0])
-    print(df['GOLF '][0])
 
     for i in range(number_of_rows):
-        dict_excel_data[df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
 
-    print(dict_excel_data)
+        if '400' in df['PID'][i]:
+            
+            owner_golf['arissara_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
+
+        elif '40/100' in df['PID'][i] :
+
+            owner_golf['nathawit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
+        
+        elif '40' in df['PID'][i] or '100' in df['PID'][i] or '4SFP10G' in df['PID'][i]:
+            
+            owner_golf['wisit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
+
+        else:
+
+            owner_golf['yanee_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
+
+    print(owner_golf)
     print("="*100)
 
 
-def fill_in_form(cisco_id):
+def fill_in_form(cisco_id,owner):
 
     frame = WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//frame[@name="down"]')))
 
     driver.switch_to_frame(frame)
 
-    WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(dict_excel_data[cisco_id][1])
+    WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(owner_golf[owner][cisco_id][1])
 
 
-    if ('final' in dict_excel_data[cisco_id][0].lower() and 'replacement' in dict_excel_data[cisco_id][1].lower() ) or ('final' in dict_excel_data[cisco_id][0].lower() and 'credit' in dict_excel_data[cisco_id][1].lower()):
+    if ('final' in owner_golf[owner][cisco_id][0].lower() and 'replacement' in owner_golf[owner][cisco_id][1].lower() ) or ('final' in owner_golf[owner][cisco_id][0].lower() and 'credit' in owner_golf[owner][cisco_id][1].lower()):
 
-        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="129"]'))).click()
+        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s3c50t14"][@value="129"]'))).click()
     
-    elif 'final' in dict_excel_data[cisco_id][0].lower() and 'scrap' in dict_excel_data[cisco_id][1].lower():
+    elif 'final' in owner_golf[owner][cisco_id][0].lower() and 'scrap' in owner_golf[owner][cisco_id][1].lower():
 
-        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="114"]'))).click()
+        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s3c50t14"][@value="114"]'))).click()
 
-    elif 'recall' in dict_excel_data[cisco_id][1].lower() or 're-call' in dict_excel_data[cisco_id][1].lower():
+    elif 'recall' in owner_golf[owner][cisco_id][1].lower() or 're-call' in owner_golf[owner][cisco_id][1].lower():
 
-        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="130"]'))).click()
+        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s3c50t14"][@value="130"]'))).click()
 
-    elif ('reject' in dict_excel_data[cisco_id][0].lower() or 'prelim' in dict_excel_data[cisco_id][0].lower() or 'final' in dict_excel_data[cisco_id][0].lower()) and ('replacement' not in dict_excel_data[cisco_id][1].lower() and 'scrap' not in dict_excel_data[cisco_id][1].lower() and 'recall' not in dict_excel_data[cisco_id][1].lower() and 're-call' not in dict_excel_data[cisco_id][1].lower()  ):
+    elif ('reject' in owner_golf[owner][cisco_id][0].lower() or 'prelim' in owner_golf[owner][cisco_id][0].lower() or 'final' in owner_golf[owner][cisco_id][0].lower()) and ('replacement' not in owner_golf[owner][cisco_id][1].lower() and 'scrap' not in owner_golf[owner][cisco_id][1].lower() and 'recall' not in owner_golf[owner][cisco_id][1].lower() and 're-call' not in owner_golf[owner][cisco_id][1].lower()  ):
 
-        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s4c50t14"][@value="23"]'))).click()
+        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s3c50t14"][@value="261"]'))).click()
 
     else:
 
-        dict_closure_incorrect[cisco_id] = dict_excel_data[cisco_id]
-
+        dict_closure_incorrect[cisco_id] = owner_golf[owner][cisco_id]
 
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="button"][@name="hello"][@value="Send  Your  Action"]'))).click()
 
@@ -128,35 +149,35 @@ def fill_in_form(cisco_id):
 #Access to the golf id
 
 
-def access_to_golf_id(cisco_id):
-    driver.get(url)
+def access_to_golf_id(cisco_id,owner):
+    driver.get('https://golf.fabrinet.co.th/normaluser/MyWorkFlow.asp?mode=1&documentgroup=&documentprefix=&docstatus=1')
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@name="searchid"]'))).send_keys(cisco_id)
     WebDriverWait(driver, 10).until(ec.visibility_of_all_elements_located((By.XPATH, '//input[@name="searchbutton"]')))[0].click()
-    print('='*200)
+
     try:
-        all_span = WebDriverWait(driver, 10).until(ec.visibility_of_all_elements_located((By.XPATH, '//span[@style="cursor:hand"]')))
-
+        all_td = WebDriverWait(driver, 10).until(ec.visibility_of_all_elements_located((By.XPATH, '//tr[@height="25"]//td')))
 
         print('='*200)
-        all_span_text = []
-        for i in all_span:
+        all_td_text = []
+        for i in all_td:
             print(i.text)
-            all_span_text.append(i.text)
+            all_td_text.append(i.text)
 
-        dict_all_span[all_span_text[3]] = all_span_text
         print('='*200)
 
-        print("Number of spans are",len(all_span),"Expected to \"12\" ")
-        all_span[9].text
-        if all_span_text[3] == cisco_id and 'FA: Review' in all_span_text[10]:
+        print("Number of spans are",len(all_td),"Expected to \"11\" ")
+
+        if all_td_text[1].strip() == cisco_id and 'FA: Review' in all_td_text[8]:
             print('='*200)
 
-            print(all_span_text[3],"is \"Review State\" ")
-            all_span[3].click()
-            fill_in_form(cisco_id)
+            print(all_td_text[1],"is \"Review State\" ")
+            all_td[1].click()
+            fill_in_form(cisco_id,owner)
         else:
-            print(all_span_text[3],"is not \"Review State\" ")
-            dict_state_incorrect[cisco_id] = dict_excel_data[cisco_id]
+            print('*'*100)
+            # print('<<<',all_td_text[1],'<<<',cisco_id)
+            print(all_td_text[1],"is not \"Review State\" ")
+            dict_state_incorrect[cisco_id] = owner_golf[owner][cisco_id]
     
     except:
         not_found_case.append(cisco_id)
@@ -164,19 +185,34 @@ def access_to_golf_id(cisco_id):
 
 
 
-
-
-
 def main():
 
-    initialize()
-    sleep(1)
+
     
     if __name__ == '__main__':
 
-        for cisco_id in dict_excel_data:
-            access_to_golf_id(cisco_id)
-            sleep(1)
+        initialize()
+
+        read_excel_data()
+
+        for owner in owner_golf:
+
+            if owner_golf[owner].__len__() > 0:
+
+                user = owner.split('_')[0] + '_id'
+                pwd = owner.split('_')[0] + '_pwd'
+
+                login(user,pwd)
+
+                sleep(1)
+
+                for cisco_id in owner_golf[owner]:
+                    access_to_golf_id(cisco_id,owner)
+                    sleep(1)
+
+                driver.quit()
+
+                
             
         
         print(  """
