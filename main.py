@@ -49,9 +49,6 @@ def login(user,pwd):
 
 
 
-
-
-
     global driver
     driver=webdriver.Chrome()
     driver.minimize_window()
@@ -110,9 +107,7 @@ def fill_in_form(cisco_id,owner):
 
     driver.switch_to.frame(frame)
 
-    print('frame: ',frame)
-
-    WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(owner_golf[owner][cisco_id][1] + '/n PID: ' + owner_golf[owner][cisco_id][2])
+    WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(owner_golf[owner][cisco_id][1] + ' ( PID: ' + owner_golf[owner][cisco_id][2]+' )')
 
     if ('final' in owner_golf[owner][cisco_id][0].lower() and 'replacement' in owner_golf[owner][cisco_id][1].lower() ) or ('final' in owner_golf[owner][cisco_id][0].lower() and 'credit' in owner_golf[owner][cisco_id][1].lower()):
 
