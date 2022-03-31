@@ -86,19 +86,19 @@ def read_excel_data():
 
         if '400' in df['PID'][i]:
             
-            owner_golf['arissara_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
+            owner_golf['arissara_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
 
         elif '40/100' in df['PID'][i] :
 
-            owner_golf['nathawit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
+            owner_golf['nathawit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
         
         elif '40' in df['PID'][i] or '100' in df['PID'][i] or '4SFP10G' in df['PID'][i]:
             
-            owner_golf['wisit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
+            owner_golf['wisit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
 
         else:
 
-            owner_golf['yanee_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i]]
+            owner_golf['yanee_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
 
     print(owner_golf)
     print("="*100)
@@ -108,9 +108,11 @@ def fill_in_form(cisco_id,owner):
 
     frame = WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//frame[@name="down"]')))
 
-    driver.switch_to_frame(frame)
+    driver.switch_to.frame(frame)
 
-    WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(owner_golf[owner][cisco_id][1] + '/n PID: ' + owner_golf[owner][cisco_id][3])
+    print('frame: ',frame)
+
+    WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//textarea[@name="i0s2c211"]'))).send_keys(owner_golf[owner][cisco_id][1] + '/n PID: ' + owner_golf[owner][cisco_id][2])
 
     if ('final' in owner_golf[owner][cisco_id][0].lower() and 'replacement' in owner_golf[owner][cisco_id][1].lower() ) or ('final' in owner_golf[owner][cisco_id][0].lower() and 'credit' in owner_golf[owner][cisco_id][1].lower()):
 
@@ -177,7 +179,7 @@ def access_to_golf_id(cisco_id,owner):
             # print('<<<',all_td_text[1],'<<<',cisco_id)
             print(all_td_text[1],"is not \"Review State\" ")
             dict_state_incorrect[cisco_id] = owner_golf[owner][cisco_id]
-    
+
     except:
         not_found_case.append(cisco_id)
 
