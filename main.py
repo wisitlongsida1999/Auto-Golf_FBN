@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from time import sleep
 import pandas as pd
 import sys
+import traceback
 
 
 
@@ -72,7 +73,7 @@ def login(user,pwd):
 
 
 def read_excel_data():
-    df = pd.read_excel('GOLF_8D_Template.xlsx')
+    df = pd.read_excel('GOLF_8D_Template.xlsm')
     print(df)
     index = df.index
     number_of_rows = len(index)
@@ -176,7 +177,12 @@ def access_to_golf_id(cisco_id,owner):
             dict_state_incorrect[cisco_id] = owner_golf[owner][cisco_id]
 
     except:
+        
         not_found_case.append(cisco_id)
+
+        traceback.print_exc()
+
+
 
 
 
