@@ -52,7 +52,7 @@ def login(user,pwd):
 
     global driver
     driver=webdriver.Chrome()
-    driver.minimize_window()
+    # driver.minimize_window()
     driver.get('https://golf.fabrinet.co.th/normaluser/MyWorkFlow.asp?mode=1&documentgroup=&documentprefix=&docstatus=1')
     url_before = driver.current_url
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="text"]'))).send_keys(username)
@@ -90,7 +90,7 @@ def read_excel_data():
 
             owner_golf['nathawit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
         
-        elif '40' in df['PID'][i] or '100' in df['PID'][i] or '4SFP10G' in df['PID'][i]:
+        elif '40' in df['PID'][i] or '100' in df['PID'][i] or '4SFP10G' in df['PID'][i] or '4X10'in df['PID'][i]:
             
             owner_golf['wisit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
 
@@ -113,14 +113,14 @@ def fill_in_form(cisco_id,owner):
     if ('final' in owner_golf[owner][cisco_id][0].lower() and 'replacement' in owner_golf[owner][cisco_id][1].lower() ) or ('final' in owner_golf[owner][cisco_id][0].lower() and 'credit' in owner_golf[owner][cisco_id][1].lower()):
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s3c50t14"][@value="129"]'))).click()
-    
-    elif 'final' in owner_golf[owner][cisco_id][0].lower() and 'scrap' in owner_golf[owner][cisco_id][1].lower():
-
-        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s3c50t14"][@value="114"]'))).click()
 
     elif 'recall' in owner_golf[owner][cisco_id][1].lower() or 're-call' in owner_golf[owner][cisco_id][1].lower():
 
         WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s3c50t14"][@value="130"]'))).click()
+    
+    elif 'final' in owner_golf[owner][cisco_id][0].lower() and 'scrap' in owner_golf[owner][cisco_id][1].lower():
+
+        WebDriverWait(driver, 10).until(ec.presence_of_element_located((By.XPATH, '//input[@type="radio"][@name="i0s3c50t14"][@value="114"]'))).click()
 
     elif ('reject' in owner_golf[owner][cisco_id][0].lower() or 'prelim' in owner_golf[owner][cisco_id][0].lower() or 'final' in owner_golf[owner][cisco_id][0].lower()) and ('replacement' not in owner_golf[owner][cisco_id][1].lower() and 'scrap' not in owner_golf[owner][cisco_id][1].lower() and 'recall' not in owner_golf[owner][cisco_id][1].lower() and 're-call' not in owner_golf[owner][cisco_id][1].lower()  ):
 
