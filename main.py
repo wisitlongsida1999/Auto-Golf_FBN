@@ -7,7 +7,8 @@ from time import sleep
 import pandas as pd
 import sys
 import traceback
-
+import chromedriver_autoinstaller
+from selenium.webdriver.chrome.service import Service
 
 
 
@@ -20,6 +21,7 @@ def initialize():
     global not_found_case
     global owner_golf
     global time_out
+    global driver_path
 
     dict_all_span = {} #global
     dict_excel_data = {} #global
@@ -29,6 +31,8 @@ def initialize():
     not_found_case = []
     owner_golf = {'nathawit_golf':{},'arissara_golf':{},'wisit_golf':{},'yanee_golf':{}}
 
+    #init chrome driver
+    driver_path = chromedriver_autoinstaller.install()
 
 
 
@@ -51,7 +55,7 @@ def login(user,pwd):
 
 
     global driver
-    driver=webdriver.Chrome()
+    driver=webdriver.Chrome(driver_path)
     # driver.minimize_window()
     driver.get('https://golf.fabrinet.co.th/normaluser/MyWorkFlow.asp?mode=1&documentgroup=&documentprefix=&docstatus=1')
     url_before = driver.current_url
@@ -183,14 +187,9 @@ def access_to_golf_id(cisco_id,owner):
         traceback.print_exc()
 
 
-
-
-
-
 def main():
 
 
-    
     if __name__ == '__main__':
 
         initialize()
