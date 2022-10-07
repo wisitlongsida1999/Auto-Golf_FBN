@@ -71,7 +71,7 @@ def login(user,pwd):
         time+=1
         print("waiting for response from server",time_out,"seconds")
         if(time > time_out):
-            raise exception("fail connected to server")
+            raise Exception("fail connected to server")
 
 
 
