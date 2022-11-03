@@ -56,7 +56,7 @@ def login(user,pwd):
 
     global driver
     driver=webdriver.Chrome(driver_path)
-    # driver.minimize_window()
+    driver.maximize_window()
     driver.get('https://golf.fabrinet.co.th/normaluser/MyWorkFlow.asp?mode=1&documentgroup=&documentprefix=&docstatus=1')
     url_before = driver.current_url
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="text"]'))).send_keys(username)
