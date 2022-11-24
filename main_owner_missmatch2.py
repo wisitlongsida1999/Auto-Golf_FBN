@@ -1,25 +1,14 @@
-import datetime
-import subprocess
-
-while True:
-    
-    try:
-        import configparser
-        from selenium import webdriver
-        from selenium.webdriver.common.by import By
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as ec
-        from time import sleep
-        import pandas as pd
-        import sys
-        import traceback
-        import chromedriver_autoinstaller
-        from selenium.webdriver.chrome.service import Service
-        break
-
-    except ImportError as err_mdl:
-
-        subprocess.check_call([sys.executable, "-m", "pip", "install","--trusted-host", "pypi.org" ,"--trusted-host" ,"files.pythonhosted.org", err_mdl.name])
+import configparser
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+from time import sleep
+import pandas as pd
+import sys
+import traceback
+import chromedriver_autoinstaller
+from selenium.webdriver.chrome.service import Service
 
 
 
@@ -33,7 +22,6 @@ def initialize():
     global owner_golf
     global time_out
     global driver_path
-    global config
 
     dict_all_span = {} #global
     dict_excel_data = {} #global
@@ -45,43 +33,35 @@ def initialize():
 
     #init chrome driver
     driver_path = chromedriver_autoinstaller.install()
-    
-    # config
-    my_config_parser = configparser.ConfigParser()
-    my_config_parser.read(r'C:\config\config.ini')
-    config = {
-
-
-    "nathawit_id":      my_config_parser.get('GOLF_LOGIN',"nathawit_id") ,
-    "nathawit_pwd":     my_config_parser.get('GOLF_LOGIN',"nathawit_pwd"),
-    "wisit_id":         my_config_parser.get('GOLF_LOGIN',"wisit_id"),
-    "wisit_pwd":        my_config_parser.get('GOLF_LOGIN',"wisit_pwd"),
-    "arissara_id":      my_config_parser.get('GOLF_LOGIN',"arissara_id"),
-    "arissara_pwd":     my_config_parser.get('GOLF_LOGIN',"arissara_pwd"),
-    "yanee_id":         my_config_parser.get('GOLF_LOGIN',"yanee_id"),
-    "yanee_pwd":        my_config_parser.get('GOLF_LOGIN',"yanee_pwd"),
-    "path":             my_config_parser.get('GOLF_TEMPLATE',"path"),  
-
-    }
-
-
-
 
 
 
 def login(user,pwd):
+
+    # config
+    my_config_parser = configparser.ConfigParser()
+    my_config_parser.read('config.ini')
+    payload = {
+        'username': my_config_parser.get('GOLF_LOGIN',f'{user}'),
+        'password': my_config_parser.get('GOLF_LOGIN',f'{pwd}'),
+
+        }
+
+
+    username = payload['username']
+    password = payload['password']
 
 
 
 
     global driver
     driver=webdriver.Chrome(driver_path)
-    driver.maximize_window()
+    # driver.minimize_window()
     driver.get('https://golf.fabrinet.co.th/normaluser/MyWorkFlow.asp?mode=1&documentgroup=&documentprefix=&docstatus=1')
     url_before = driver.current_url
-    WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="text"]'))).send_keys(config[user])
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="text"]'))).send_keys(username)
 
-    WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="password"]'))).send_keys(config[pwd])
+    WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="password"]'))).send_keys(password)
 
     WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.XPATH, '//input[@type="submit"]'))).click()
 
@@ -97,7 +77,7 @@ def login(user,pwd):
 
 
 def read_excel_data():
-    df = pd.read_excel(config['path'])
+    df = pd.read_excel('GOLF_8D_Template.xlsm')
     print(df)
     index = df.index
     number_of_rows = len(index)
@@ -106,19 +86,19 @@ def read_excel_data():
 
     for i in range(number_of_rows):
 
-        if '400' in df['PID'][i] or '4X100' in df['PID'][i]:
+        if 'arissaran' in df['Owner'][i].lower():
             
             owner_golf['arissara_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
 
-        elif '40/100' in df['PID'][i] :
+        elif 'natthawitp' in df['Owner'][i].lower() :
 
             owner_golf['nathawit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
         
-        elif '40' in df['PID'][i] or '100' in df['PID'][i] or '4SFP10G' in df['PID'][i] or '4X10'in df['PID'][i]:
+        elif 'wisitl' in df['Owner'][i].lower():
             
             owner_golf['wisit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
 
-        else:
+        elif 'yaneew' in df['Owner'][i].lower() :
 
             owner_golf['yanee_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
 
