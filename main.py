@@ -105,19 +105,15 @@ def read_excel_data():
 
     #arrange case owners
     for i in range(number_of_rows):
-
-        if '400' in df['PID'][i] or '4X100' in df['PID'][i]:
-            
-            owner_golf['arissara_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
-
-        elif '40/100' in df['PID'][i] :
+    
+        if '40/100' in df['PID'][i] :
 
             owner_golf['nathawit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
-        
-        elif '40' in df['PID'][i] or '100' in df['PID'][i] or '4SFP10G' in df['PID'][i] or '4X10'in df['PID'][i]:
+
+        elif 'QDD' in df['PID'][i] or 'QSFP' in df['PID'][i] or 'CPAK' in df['PID'][i]:
             
             owner_golf['arissara_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
-
+        
         else:
 
             owner_golf['yanee_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
