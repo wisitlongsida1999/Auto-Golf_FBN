@@ -103,7 +103,7 @@ def read_excel_data():
     number_of_rows = len(index)
     print(number_of_rows)
 
-
+    #arrange case owners
     for i in range(number_of_rows):
 
         if '400' in df['PID'][i] or '4X100' in df['PID'][i]:
@@ -116,7 +116,7 @@ def read_excel_data():
         
         elif '40' in df['PID'][i] or '100' in df['PID'][i] or '4SFP10G' in df['PID'][i] or '4X10'in df['PID'][i]:
             
-            owner_golf['wisit_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
+            owner_golf['arissara_golf'][df['GOLF '][i]] = [df['FA Report Acceptance'][i],df['Cisco Comment to supplier'][i],df['PID'][i]]
 
         else:
 
