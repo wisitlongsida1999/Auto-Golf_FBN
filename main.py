@@ -1,5 +1,6 @@
 import datetime
 import subprocess
+import os
 
 while True:
     
@@ -34,7 +35,11 @@ def initialize():
     global time_out
     global driver_path
     global config
-
+    global PATH
+    global USER
+    global CONFIG_PATH
+    global TEMPLATE_PATH
+    
     dict_all_span = {} #global
     dict_excel_data = {} #global
     time_out = 30 #default
@@ -42,13 +47,20 @@ def initialize():
     dict_closure_incorrect = {}
     not_found_case = []
     owner_golf = {'nathawit_golf':{},'arissara_golf':{},'wisit_golf':{},'yanee_golf':{}}
+    
+    
+    #init path
+    PATH = os.path.abspath(os.path.dirname(__file__))
+    USER = os.getlogin()
+    CONFIG_PATH = r'C:\config\config.ini'
+    TEMPLATE_PATH = PATH + r"\GOLF_8D_Template.xlsm"
 
     #init chrome driver
     driver_path = chromedriver_autoinstaller.install()
     
     # config
     my_config_parser = configparser.ConfigParser()
-    my_config_parser.read(r'C:\config\config.ini')
+    my_config_parser.read(CONFIG_PATH)
     config = {
 
 
@@ -60,7 +72,6 @@ def initialize():
     "arissara_pwd":     my_config_parser.get('GOLF_LOGIN',"arissara_pwd"),
     "yanee_id":         my_config_parser.get('GOLF_LOGIN',"yanee_id"),
     "yanee_pwd":        my_config_parser.get('GOLF_LOGIN',"yanee_pwd"),
-    "path":             my_config_parser.get('GOLF_TEMPLATE',"path"),  
 
     }
 
@@ -97,7 +108,7 @@ def login(user,pwd):
 
 
 def read_excel_data():
-    df = pd.read_excel(config['path'])
+    df = pd.read_excel(TEMPLATE_PATH)
     print(df)
     index = df.index
     number_of_rows = len(index)
