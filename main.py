@@ -1,26 +1,17 @@
 import datetime
 import subprocess
 import os
-
-while True:
-    
-    try:
-        import configparser
-        from selenium import webdriver
-        from selenium.webdriver.common.by import By
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as ec
-        from time import sleep
-        import pandas as pd
-        import sys
-        import traceback
-        import chromedriver_autoinstaller
-        from selenium.webdriver.chrome.service import Service
-        break
-
-    except ImportError as err_mdl:
-
-        subprocess.check_call([sys.executable, "-m", "pip", "install","--trusted-host", "pypi.org" ,"--trusted-host" ,"files.pythonhosted.org", err_mdl.name])
+import configparser
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+from time import sleep
+import pandas as pd
+import sys
+import traceback
+import chromedriver_autoinstaller
+from selenium.webdriver.chrome.service import Service
 
 
 
